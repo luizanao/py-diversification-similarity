@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import cv2
 import numpy as np
+from scipy.cluster import vq
 
 extractors = [("sift", cv2.SIFT()), ("surf", cv2.SURF())]
 SUPPORTED_DESCRIPTORS = dict(extractors)
@@ -22,3 +23,11 @@ def create_codebook(samples, size=300):
     ret, labels, centroids = cv2.kmeans(data, size, criteria, attempts, cv2.KMEANS_PP_CENTERS)
     return centroids
 
+
+def extract_features(codebook, descriptors):
+    """Converts an array of descriptors into an array of features using a pre-calculated codebook"""
+    features = np.zeros(len(codebook))
+    indexes, dist = vq.vq(descriptors, codebook)
+    for idx in indexes:
+        features[idx] += 1
+    return features
