@@ -1,10 +1,32 @@
 # -*- coding: utf-8 -*-
 import cv2
+import os,sys
+import Image
 import numpy as np
 from scipy.cluster import vq
 
 extractors = [("sift", cv2.SIFT()), ("surf", cv2.SURF())]
 SUPPORTED_DESCRIPTORS = dict(extractors)
+
+def io_loader(query_object,dataset):
+    '''
+    dataset: string (path)(multiple obj)
+    query_object: string (path)(single obj)
+    Load entire datase and search point, and call features extraction 
+    
+    could not be tested - TODO test and refactor
+    '''
+    if not (query_object and dataset):
+        return     
+
+    query_object_features = extract_descriptors(Image.open(query_object), descriptor='sift')
+    datase_features = []
+    for subdir, dirs, files in os.walk(dataset):
+        for file in files:
+            img_path = os.path.join(subdir, file)
+            datase_features.append(extract_descriptors(Image.open(img_path), descriptor='sift'))
+
+
 
 def extract_descriptors(image, descriptor='sift'):
     """ Given an image, it extracts keypoints and compute its descriptors using a selected technique"""
@@ -31,3 +53,7 @@ def extract_features(codebook, descriptors):
     for idx in indexes:
         features[idx] += 1
     return features
+
+if __name__ == '__main__':
+    _path = '/home/luizfelipe/Downloads/zip1'
+    io_loader(_path + '/all_souls_000152.jpg', _path)
