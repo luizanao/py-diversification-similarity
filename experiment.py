@@ -3,6 +3,7 @@ import feature_extraction
 import dataset
 import pickle
 import numpy as np
+from searcher import Searcher
 
 if __name__ == '__main__':
     # TODO: load experiment using params
@@ -29,3 +30,9 @@ if __name__ == '__main__':
     pickle.dump(train_features, open("train_features.pk", "wb"))
     pickle.dump(test_features, open("test_features.pk", "wb"))
     pickle.dump(codebook, open("codebook.pk", "wb"))
+
+    # creates index using LSHash and train set
+    searcher = Searcher(train_features)
+
+    # persists index for future use
+    pickle.dump(searcher, open("searcher.pk", "wb"))
